@@ -4,7 +4,7 @@ This is the Komga plugin for Rulia app.
 
 ## Install
 
-1. Download the plugin zip and save it to somewhere.
+1. Download the plugin zip from the **Releases** section on the right side and save it to somewhere.
 
 2. Open Rulia and install it: Just click the "+" button in plugin page then select the zip file. Simple.
 
