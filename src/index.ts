@@ -3,19 +3,69 @@ import type { KomgaBookImage } from './types/book-image'
 import type { KomgaSeriesResponse } from './types/series'
 import type { KomgaSeriesListResponse } from './types/series-list'
 
-async function getMangaList (page: string, pageSize: string, keyword?: string) {
+function getMangaListFilterOptions (): IRuliaMangaListFilterOptions {
+  return [
+    {
+      label: 'Sort',
+      name: 'sort',
+      options: [
+        { label: 'Name', value: 'metadata.titleSort,asc' },
+        { label: 'Name (Desc)', value: 'metadata.titleSort,desc' },
+        { label: 'Date Added', value: 'createdDate,asc' },
+        { label: 'Date Added (Desc)', value: 'createdDate,desc' },
+        { label: 'Date Updated', value: 'lastModifiedDate,asc' },
+        { label: 'Date Updated (Desc)', value: 'lastModifiedDate,desc' },
+        { label: 'Release Date', value: 'booksMetadata.releaseDate,asc' },
+        { label: 'Release Date (Desc)', value: 'booksMetadata.releaseDate,desc' },
+        { label: 'Folder Name', value: 'name,asc' },
+        { label: 'Folder Name (Desc)', value: 'name,desc' },
+        { label: 'Books Count', value: 'booksCount,asc' },
+        { label: 'Books Count (Desc)', value: 'booksCount,desc' }
+      ]
+    }
+  ]
+}
+
+function safeParseRawFilterOptions (rawFilterOptions?: string): Record<string, string> {
+  if (rawFilterOptions) {
+    try {
+      return JSON.parse(rawFilterOptions)
+    } catch (error) {
+      // ...
+    }
+  }
+  return {}
+}
+
+async function setMangaListFilterOptions () {
+  try {
+    window.Rulia.endWithResult(getMangaListFilterOptions())
+  } catch (error) {
+    window.Rulia.endWithResult([])
+  }
+}
+
+async function getMangaList (page: string, pageSize: string, keyword?: string, rawFilterOptions?: string) {
   const userConfig = window.Rulia.getUserConfig()
   const baseUrl = userConfig.baseUrl
   if (!baseUrl) {
     return window.Rulia.endWithException('Please provide baseUrl in plugin config')
   }
 
+  const filterOptions = safeParseRawFilterOptions(rawFilterOptions)
   try {
     const query = new URLSearchParams()
     query.append('page', (parseInt(page) - 1).toString())
     query.append('size', pageSize)
+
     if (keyword) {
       query.append('search', keyword)
+    }
+
+    if (filterOptions.sort) {
+      query.append('sort', filterOptions.sort)
+    } else {
+      query.append('sort', getMangaListFilterOptions()[0].options[0].value)
     }
 
     const rawResponse = await window.Rulia.httpRequest({
