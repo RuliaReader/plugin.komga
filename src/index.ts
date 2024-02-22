@@ -45,6 +45,17 @@ async function setMangaListFilterOptions () {
   }
 }
 
+function getHttpHeaders (): Record<string, string> {
+  const result: Record<string, string> = {}
+  const userConfig = window.Rulia.getUserConfig()
+  const username = userConfig.username
+  const password = userConfig.password
+  if (username && password) {
+    result.Authorization = `Basic ${btoa(`${username}:${password}`)}`
+  }
+  return result
+}
+
 async function getMangaList (page: string, pageSize: string, keyword?: string, rawFilterOptions?: string) {
   const userConfig = window.Rulia.getUserConfig()
   const baseUrl = userConfig.baseUrl
@@ -71,7 +82,8 @@ async function getMangaList (page: string, pageSize: string, keyword?: string, r
     const rawResponse = await window.Rulia.httpRequest({
       url: `${baseUrl}/api/v1/series`,
       method: 'GET',
-      payload: query.toString()
+      payload: query.toString(),
+      headers: getHttpHeaders()
     })
 
     const response = JSON.parse(rawResponse) as KomgaSeriesListResponse
@@ -121,7 +133,8 @@ async function getMangaData (metadata: string) {
     const rawResponse = await window.Rulia.httpRequest({
       url: `${baseUrl}/api/v1/series/${seriesId}/books`,
       method: 'GET',
-      payload: query.toString()
+      payload: query.toString(),
+      headers: getHttpHeaders()
     })
 
     const response = JSON.parse(rawResponse) as KomgaBooksResponse
@@ -137,7 +150,8 @@ async function getMangaData (metadata: string) {
   try {
     const rawResponse = await window.Rulia.httpRequest({
       url: `${baseUrl}/api/v1/series/${seriesId}`,
-      method: 'GET'
+      method: 'GET',
+      headers: getHttpHeaders()
     })
     const response = JSON.parse(rawResponse) as KomgaSeriesResponse
     result.title = response.name
@@ -159,7 +173,8 @@ async function getChapterImageList (bookId: string) {
   try {
     const rawResponse = await window.Rulia.httpRequest({
       url: `${baseUrl}/api/v1/books/${bookId}/pages`,
-      method: 'GET'
+      method: 'GET',
+      headers: getHttpHeaders()
     })
     const response = await JSON.parse(rawResponse) as KomgaBookImage[]
 

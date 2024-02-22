@@ -6,10 +6,19 @@
   "author": "LancerComet",
   "tags": ["Komga"],
   "homepage": "https://github.com/RuliaReader/plugin.komga",
+  "requestedVersion": "0.17.0",
   "userConfig": {
     "baseUrl": {
       "displayName": "Base URL",
       "description": "Please provide the base URL of your Komga server, like: http://192.168.0.100:25600"
+    },
+    "username": {
+      "displayName": "Username",
+      "description": "Please provide the username of your Komga server."
+    },
+    "password": {
+      "displayName": "Password",
+      "description": "Please provide the password of your Komga server."
     }
   }
 }
